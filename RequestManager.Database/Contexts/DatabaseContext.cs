@@ -1,18 +1,18 @@
-﻿using RequestManager.Database.Models;
-using RequestManager.Database.Models.Common.Interfaces;
-using Duende.IdentityServer.EntityFramework.Options;
+﻿using Duende.IdentityServer.EntityFramework.Options;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Options;
+using RequestManager.Database.Models;
+using RequestManager.Database.Models.Common.Interfaces;
 using System.Linq.Expressions;
 
 namespace RequestManager.Database.Contexts;
 
 public sealed class DatabaseContext : ApiAuthorizationDbContext<User>
 {
-    public DbSet<Deliver> Delivers { get; set; }
-    public DbSet<Request> Requests { get; set; }
+    public DbSet<SendGoods> SendsGoods { get; set; }
+    public DbSet<DeliverGoods> DeliversGoods { get; set; }
 
     public DatabaseContext(
         DbContextOptions options,
@@ -30,7 +30,6 @@ public sealed class DatabaseContext : ApiAuthorizationDbContext<User>
             {
                 case EntityState.Deleted:
                     entry.State = EntityState.Unchanged;
-                    //entry.Property(nameof(IDeletable.DeletedBy)).CurrentValue = _currentUser.UserId; // TODO
                     entry.Property(nameof(IDeletable.DeletedAt)).CurrentValue = DateTime.UtcNow;
                     break;
             }

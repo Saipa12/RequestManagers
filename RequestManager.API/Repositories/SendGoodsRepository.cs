@@ -5,9 +5,9 @@ using RequestManager.Database.Models;
 
 namespace RequestManager.API.Repositories;
 
-public class DeliverRepository : Repository<Deliver>
+public class SendGoodsRepository : Repository<SendGoods>
 {
-    public DeliverRepository(DatabaseContext databaseContext, IMapper mapper) : base(databaseContext, mapper)
+    public SendGoodsRepository(DatabaseContext databaseContext, IMapper mapper) : base(databaseContext, mapper)
     {
     }
 }
