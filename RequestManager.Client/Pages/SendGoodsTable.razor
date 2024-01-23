@@ -1,0 +1,65 @@
+﻿@page "/send"
+@using RequestManager.API.Dto;
+@using RequestManager.Core.Components
+
+<h3>Start</h3>
+@if (Send == null)
+{
+	<p>Loading...</p>
+}
+else
+{
+	<MudButton Variant="Variant.Filled" OnClick="AddRecord" StartIcon="@Icons.Material.Outlined.Add"></MudButton>
+<MudTable MultiSelection="true" @ref="_mudTable" SelectedItem="@_selectedItem"
+    T="SendGoodsDto" Items="@Send" Dense="true" Hover="true" CanCancelEdit="@_canCancelEdit"
+    SelectedItems="@_selectedItems" SortLabel="Sort By" CommitEditTooltip="Commit Edit"
+    RowEditPreview="x => BackupItem((SendGoodsDto)x)" RowEditCancel="x => ResetItemToOriginalValues((SendGoodsDto)x)"
+    RowEditCommit="x => ItemHasBeenCommitted((SendGoodsDto)x)"
+    IsEditRowSwitchingBlocked="@_blockSwitch" ApplyButtonPosition="@_applyButtonPosition"
+    EditButtonPosition="@_editButtonPosition" EditTrigger="@_editTrigger" TotalItems="_totalItems"
+			  ServerData="@(new Func<TableState, Task<TableData<SendGoodsDto>>>(LoadPage))">
+   		<ToolBarContent>
+			<MudText Typo="Typo.h6">Request</MudText>
+			<MudSpacer />
+			<MudDatePicker @bind-Date="_dateFrom" Placeholder="Date From" Adornment="Adornment.Start" TextChanged="()=>Filter()" IconSize="MudBlazor.Size.Medium" Class="mt-0" />
+
+			<MudDatePicker @bind-Date="_datebefore" Placeholder="Date Before" Adornment="Adornment.Start" TextChanged="()=>Filter()" IconSize="MudBlazor.Size.Medium" Class="mt-0" />
+		</ToolBarContent>
+
+		<HeaderContent>
+			<MudTh><MudTableSortLabel SortBy="new Func<SendGoodsDto, object>(x=>x.SendDate)">Date </MudTableSortLabel></MudTh>
+			<MudTh><MudTableSortLabel SortBy="new Func<SendGoodsDto, object>(x=>x.Count)">Count </MudTableSortLabel></MudTh>
+			<MudTh><MudTableSortLabel SortBy="new Func<SendGoodsDto, object>(x=>x.Requests.Surname)">Goods</MudTableSortLabel></MudTh> 
+		</HeaderContent>
+		<RowTemplate>
+			<MudTd DataLabel="Date"> @context.SendDate</MudTd>
+			<MudTd DataLabel="Count"> @context.Count</MudTd>
+			<MudTd DataLabel="Goods">@context.Requests?.Surname</MudTd>
+		</RowTemplate>
+		<RowEditingTemplate>
+			<MudTd DataLabel="Date">
+				<MudDatePicker @bind-Value="@context.SendDate" />
+				</MudTd>		
+				<MudTd DataLabel="Count">
+					<MudTextField @bind-Value="@context.Count" />
+				</MudTd>
+			<MudTd DataLabel="Goods">
+				<MudSelect @bind-Value="@context.Requests" T="GoodsDto">
+					@foreach (var deliver in Goods)
+					{
+						<MudSelectItem Value="@deliver">@deliver.Surname</MudSelectItem>
+					}
+				</MudSelect>
+			</MudTd>
+		</RowEditingTemplate>
+		<PagerContent >
+			<MudTablePager  />
+		</PagerContent>
+		<EditButtonContent Context="button">
+			<MudIconButton Size="@MudBlazor.Size.Small" Icon="@Icons.Material.Outlined.Edit" Class="pa-0" OnClick="@button.ButtonAction" Disabled="@button.ButtonDisabled" />	
+		</EditButtonContent>
+	</MudTable>
+	<MudIconButton Size="@MudBlazor.Size.Large" Icon="@Icons.Material.Filled.Delete" OnClick="Drop">Delete</MudIconButton>
+	<ReasonDialog ></ReasonDialog>
+
+}

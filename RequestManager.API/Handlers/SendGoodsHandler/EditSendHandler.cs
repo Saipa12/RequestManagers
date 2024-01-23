@@ -2,19 +2,20 @@
 using RequestManager.API.Dto;
 using RequestManager.API.Repositories;
 using RequestManager.Core.Handlers;
+using RequestManager.Database.Models;
 
-namespace RequestManager.API.Handlers.RequestHandler;
+namespace RequestManager.API.Handlers.SendHandler;
 
 public record EditRequestSendGoods(SendGoodsDto Request);
 
 public record EditResponseSendGoods(SendGoodsDto Request);
 
-public class EditRequestHandler : IAsyncHandler<EditRequestSendGoods, EditResponseSendGoods>
+public class EditSendHandler : IAsyncHandler<EditRequestSendGoods, EditResponseSendGoods>
 {
     private readonly SendGoodsRepository _sendGoodsRepository;
     private readonly IMapper _mapper;
 
-    public EditRequestHandler(SendGoodsRepository sendGoodsRepository, IMapper mapper)
+    public EditSendHandler(SendGoodsRepository sendGoodsRepository, IMapper mapper)
     {
         _sendGoodsRepository = sendGoodsRepository;
         _mapper = mapper;

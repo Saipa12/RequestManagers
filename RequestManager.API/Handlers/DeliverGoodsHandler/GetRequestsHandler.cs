@@ -3,7 +3,7 @@ using RequestManager.API.Dto;
 using RequestManager.API.Repositories;
 using RequestManager.Core.Handlers;
 
-namespace RequestManager.API.Handlers.RequestHandler;
+namespace RequestManager.API.Handlers.DeliverHandler;
 
 public record GetRequestsDeliverGoods(int PageNumber = 1, int PageSize = 10);
 

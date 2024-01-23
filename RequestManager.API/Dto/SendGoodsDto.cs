@@ -9,5 +9,5 @@ public class SendGoodsDto : DatabaseEntity, IMapFrom<SendGoods>
 
     public int Count { get; set; }
 
-    public List<GoodsDto> Requests { get; set; }
+    public GoodsDto Requests { get; set; }
 }

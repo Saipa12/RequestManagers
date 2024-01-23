@@ -8,8 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 using RequestManager.API;
 using RequestManager.API.Common;
-using RequestManager.API.Handlers.RequestHandler;
-using RequestManager.API.Repositories;
+using RequestManager.API.GoodsHandler;
 using RequestManager.Core.Extensions;
 using RequestManager.Core.Handlers;
 using RequestManager.Core.Repositories;
@@ -27,6 +26,7 @@ namespace RequestManager;
 public class Startup
 {
     private const string ConnectionStringName = "DefaultConnectionString";
+
     private readonly bool _isProduction;
     private IConfiguration Configuration { get; }
 
@@ -38,7 +38,7 @@ public class Startup
 
     public void RegisterHandlers(IServiceCollection services)
     {
-        var handlerTypes = Assembly.GetAssembly(typeof(AddRequestHandler)).GetTypes()
+        var handlerTypes = Assembly.GetAssembly(typeof(AddGoodsHandler)).GetTypes()
     .Where(type => type.GetInterfaces().Any(
         i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IHandler<,>)
     ));

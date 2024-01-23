@@ -12,5 +12,5 @@ public class SendGoods : AuditableDatabaseEntity
     public int Count { get; set; }
 
     [Required]
-    public List<Goods> Requests { get; set; }
+    public Goods Requests { get; set; }
 }

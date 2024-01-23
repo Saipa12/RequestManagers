@@ -4,18 +4,18 @@ using RequestManager.API.Repositories;
 using RequestManager.Core.Handlers;
 using RequestManager.Database.Models;
 
-namespace RequestManager.API.Handlers.RequestHandler;
+namespace RequestManager.API.Handlers.GoodsHandler;
 
 public record DeleteRequestGoods(GoodsDto Request);
 
 public record DeleteResponseGoods();
 
-public class DeleteRequestHandler : IAsyncHandler<DeleteRequestGoods, DeleteResponseGoods>
+public class DeleteGoodsHandler : IAsyncHandler<DeleteRequestGoods, DeleteResponseGoods>
 {
     private readonly GoodsRepository _goodsRepository;
     private readonly IMapper _mapper;
 
-    public DeleteRequestHandler(GoodsRepository goodsRepository, IMapper mapper)
+    public DeleteGoodsHandler(GoodsRepository goodsRepository, IMapper mapper)
     {
         _goodsRepository = goodsRepository;
         _mapper = mapper;

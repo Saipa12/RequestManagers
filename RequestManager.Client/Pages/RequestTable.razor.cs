@@ -1,139 +1,144 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Hosting.Server;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using MudBlazor;
-using RequestManager.Api.Enums;
 using RequestManager.API.Dto;
-using RequestManager.API.Handlers.DeliverHandler;
-using RequestManager.API.Handlers.RequestHandler;
-using RequestManager.API.Repositories;
-using RequestManager.Core.Components;
-using RequestManager.Database.Models;
+using RequestManager.API.GoodsHandler;
+using RequestManager.API.Handlers.GoodsHandler;
 using System.Reflection;
-using static MudBlazor.CategoryTypes;
 
 namespace RequestManager.Client.Pages;
 
 public partial class RequestTable
 {
-    private List<RequestDto> Requests { get; set; }
+    private List<GoodsDto> Goods { get; set; }
     private int _page = 1;
     private int _pageSize = 10;
     private int _totalItems = 0;
-    private IEnumerable<DeliverDto> Delivers { get; set; }
+    //private IEnumerable<SendGoodsDto> Sends { get; set; }
+    //private IEnumerable<DeliverGoodsDto> Delivs { get; set; }
 
-    //private List<RequestStatus> _statuses;
     [Inject] private IMapper Maper { get; set; }
 
     private bool _canCancelEdit = true;
     private bool _blockSwitch = false;
     private string _searchString = "";
-    private RequestDto _selectedItem = null;
-    private RequestDto _elementBeforeEdit;
-    private HashSet<RequestDto> _selectedItems;
+    private GoodsDto _selectedItem = null;
+    private GoodsDto _elementBeforeEdit;
+    private HashSet<GoodsDto> _selectedItems;
     private TableApplyButtonPosition _applyButtonPosition = TableApplyButtonPosition.End;
     private TableEditButtonPosition _editButtonPosition = TableEditButtonPosition.End;
     private TableEditTrigger _editTrigger = TableEditTrigger.EditButton;
-    [Inject] private IDialogService DialogService { get; set; }
-    [Inject] private GetRequestsHandler GetRequestsHandler { get; set; }
-    [Inject] private GetDeliverHandler GetDeliverHandler { get; set; }
-    [Inject] private GetRequestHandler GetRequestHandler { get; set; }
-    [Inject] private AddRequestHandler AddRequestHandler { get; set; }
-    [Inject] private EditRequestHandler EditRequestHandler { get; set; }
-    [Inject] private DeleteRequestHandler DeleteRequestHandler { get; set; }
-    [Inject] private RejectedRequestHandler RejectedRequestHandler { get; set; }
 
-    private MudTable<RequestDto> _mudTable;
+    //[Inject] private IDialogService DialogService { get; set; }
+    [Inject] private GetRequestsGoodsHandler GetRequestsHandler { get; set; }
+
+    //[Inject] private GetRequestDeliverGoods GetDelivHandler { get; set; }
+    //[Inject] private GetRequestSendHandler GetRequestSendHandler { get; set; }
+    [Inject] private AddGoodsHandler AddGoodsHandler { get; set; }
+
+    [Inject] private EditRequestGoodsHandler EditRequestHandler { get; set; }
+    [Inject] private DeleteGoodsHandler DeleteRequestHandler { get; set; }
+
+    private MudTable<GoodsDto> _mudTable;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            Requests = (await GetRequestsHandler.Handle(new GetRequests(true))).RequestDto.ToList();
+            Goods = (await GetRequestsHandler.Handle(new GetRequestsGoods())).RequestDto.ToList();
             _selectedItems = new();
-            Delivers = (await GetDeliverHandler.Handle(new GetDeliverRequests(true))).DeliverDto;
-            // _statuses = Enum.GetValues(typeof(RequestStatus)).Cast<RequestStatus>();
+            //Delivs = (await GetDelivHandler.Handle(new GetDeliverRequests(true))).DeliverDto;
+            //// _statuses = Enum.GetValues(typeof(RequestStatus)).Cast<RequestStatus>();
 
             await InvokeAsync(StateHasChanged);
         }
         await base.OnAfterRenderAsync(firstRender);
     }
 
-    private async Task<TableData<RequestDto>> LoadPage(TableState state)
+    private async Task<TableData<GoodsDto>> LoadPage(TableState state)
     {
         _page = state.Page;
         _pageSize = state.PageSize;
 
         // Загрузите данные для текущей страницы, используя пагинацию
-        var response = await GetRequestsHandler.Handle(new GetRequests(true, _page, _pageSize));
-        Requests = response.RequestDto.ToList();
+        var response = await GetRequestsHandler.Handle(new GetRequestsGoods(_page, _pageSize));
+        Goods = response.RequestDto.ToList();
         // await InvokeAsync(StateHasChanged);
         // Вычислите общее количество элементов, возможно, также из серверного ответа
-        _totalItems = (await GetRequestsHandler.Handle(new GetRequests(true, _page))).Count;
-        return new TableData<RequestDto>() { TotalItems = _totalItems, Items = Requests };
+        _totalItems = (await GetRequestsHandler.Handle(new GetRequestsGoods(_page))).Count;
+        return new TableData<GoodsDto>() { TotalItems = _totalItems, Items = Goods };
         //await InvokeAsync(StateHasChanged);
     }
 
-    private void BackupItem(RequestDto element)
+    private void BackupItem(GoodsDto element)
     {
-        _elementBeforeEdit = Maper.Map<RequestDto>(element);
+        _elementBeforeEdit = Maper.Map<GoodsDto>(element);
     }
 
-    public async void RejectRequest(RequestDto request)
+    //public async void RejectRequest(GoodsDto request)
+    //{
+    //    //var parameters = new DialogParameters<ReasonDialog> { };
+
+    //    var dialog = await DialogService.ShowAsync<ReasonDialog>($"{request.Id} From {request.DispatchAddress} To {request.DeliveryAddress} "/*, parameters*/);
+    //    var result = await dialog.Result;
+
+    //    if (!result.Canceled)
+    //    {
+    //        await RejectedRequestHandler.Handle(new RejectedRequest(request, result.Data.ToString()));
+    //    }
+    //}
+    public void OpenMap()
     {
-        //var parameters = new DialogParameters<ReasonDialog> { };
-
-        var dialog = await DialogService.ShowAsync<ReasonDialog>($"{request.Id} From {request.DispatchAddress} To {request.DeliveryAddress} "/*, parameters*/);
-        var result = await dialog.Result;
-
-        if (!result.Canceled)
-        {
-            await RejectedRequestHandler.Handle(new RejectedRequest(request, result.Data.ToString()));
-        }
+        Navigation.NavigateTo("send");
     }
 
     public async void Drop()
     {
         foreach (var request in _selectedItems)
         {
-            if (request.Status == RequestStatus.New)
-            {
-                Requests.Remove(request);
-                request.Deliver = null;
-                await DeleteRequestHandler.Handle(new DeleteRequest(request));
-            }
-            else
-            {
-                RejectRequest(request);
-            }
+            //if (request.Status == RequestStatus.New)
+            // {
+            Goods.Remove(request);
+            //  request.Deliver = null;
+            await DeleteRequestHandler.Handle(new DeleteRequestGoods(request));
+            //}
+            //else
+            //{
+            //    RejectRequest(request);
+            //}
         }
         await InvokeAsync(StateHasChanged);
     }
 
-    private async void ItemHasBeenCommitted(RequestDto element)
+    private async void ItemHasBeenCommitted(GoodsDto element)
     {
         if (element.Id == 0)
         {
-            element.Id = (await GetRequestsHandler.Handle(new GetRequests(false))).RequestDto.Last().Id;
-            await EditRequestHandler.Handle(new EditRequest(element));
-            Requests = (await GetRequestsHandler.Handle(new GetRequests(true))).RequestDto.ToList();
+            element.Id = (await GetRequestsHandler.Handle(new GetRequestsGoods(0))).RequestDto.Last().Id;
+            await EditRequestHandler.Handle(new EditRequestGoods(element));
+            Goods = (await GetRequestsHandler.Handle(new GetRequestsGoods())).RequestDto.ToList();
         }
         else
         {
-            await EditRequestHandler.Handle(new EditRequest(element));
+            await EditRequestHandler.Handle(new EditRequestGoods(element));
         }
 
         await InvokeAsync(StateHasChanged);
     }
 
-    private void ResetItemToOriginalValues(RequestDto element)
+    private async void ResetItemToOriginalValues(GoodsDto element)
     {
-        _elementBeforeEdit = Maper.Map<RequestDto>(element);
+        if (element.Id == 0)
+        {
+            await DeleteRequestHandler.Handle(new DeleteRequestGoods(element));
+        }
+        else
+        {
+            _elementBeforeEdit = Maper.Map<GoodsDto>(element);
+        }
     }
 
-    private bool FilterFunc(RequestDto element)
+    private bool FilterFunc(GoodsDto element)
     {
         if (string.IsNullOrWhiteSpace(_searchString))
             return true;
@@ -166,19 +171,19 @@ public partial class RequestTable
     private async void AddRecord()
     {
         _mudTable.SetEditingItem(null);
-        var newRecord = new RequestDto
+        var newRecord = new GoodsDto
         {
-            Status = RequestStatus.New,
-            DeliveryAddress = "",
-            DispatchAddress = "",
-            DeliveryDate = DateTime.UtcNow,
-            DeliveryTime = DateTime.UtcNow.AddDays(3)
+            Surname = ""
+            //DeliveryAddress = "",
+            //DispatchAddress = "",
+            //DeliveryDate = DateTime.UtcNow,
+            //DeliveryTime = DateTime.UtcNow.AddDays(3)
         };
 
-        Requests.Insert(0, newRecord);
-        await AddRequestHandler.Handle(new AddRequest(newRecord));
-        _mudTable.SetSelectedItem(Requests.First());
-        _mudTable.SetEditingItem(Requests.First());
+        Goods.Insert(0, newRecord);
+        await AddGoodsHandler.Handle(new AddRequestGoods(newRecord));
+        _mudTable.SetSelectedItem(Goods.First());
+        _mudTable.SetEditingItem(Goods.First());
         await InvokeAsync(StateHasChanged);
     }
 }

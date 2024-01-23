@@ -5,7 +5,7 @@ using RequestManager.Core.Handlers;
 
 using RequestManager.Database.Models;
 
-namespace RequestManager.API.Handlers.RequestHandler;
+namespace RequestManager.API.Handlers.SendHandler;
 
 public record DeleteRequestSendGoods(SendGoodsDto Request);
 

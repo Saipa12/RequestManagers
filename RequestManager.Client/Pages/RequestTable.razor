@@ -1,10 +1,9 @@
 ﻿@page "/"
 @using RequestManager.API.Dto;
-@using RequestManager.Api.Enums;
 @using RequestManager.Core.Components
-
+@inject NavigationManager Navigation
 <h3>Start</h3>
-@if (Requests == null)
+@if (Goods == null)
 {
 	<p>Loading...</p>
 }
@@ -12,14 +11,14 @@ else
 {
 	<MudButton Variant="Variant.Filled" OnClick="AddRecord" StartIcon="@Icons.Material.Outlined.Add"></MudButton>
 <MudTable MultiSelection="true" @ref="_mudTable" SelectedItem="@_selectedItem"
-    T="RequestDto" Items="@Requests" Dense="true" Hover="true" CanCancelEdit="@_canCancelEdit"
-    Filter="new Func<RequestDto, bool>(FilterFunc)"
+    T="GoodsDto" Items="@Goods" Dense="true" Hover="true" CanCancelEdit="@_canCancelEdit"
+    Filter="new Func<GoodsDto, bool>(FilterFunc)"
     SelectedItems="@_selectedItems" SortLabel="Sort By" CommitEditTooltip="Commit Edit"
-    RowEditPreview="x => BackupItem((RequestDto)x)" RowEditCancel="x => ResetItemToOriginalValues((RequestDto)x)"
-    RowEditCommit="x => ItemHasBeenCommitted((RequestDto)x)"
+    RowEditPreview="x => BackupItem((GoodsDto)x)" RowEditCancel="x => ResetItemToOriginalValues((GoodsDto)x)"
+    RowEditCommit="x => ItemHasBeenCommitted((GoodsDto)x)"
     IsEditRowSwitchingBlocked="@_blockSwitch" ApplyButtonPosition="@_applyButtonPosition"
     EditButtonPosition="@_editButtonPosition" EditTrigger="@_editTrigger" TotalItems="_totalItems"
-			  ServerData="@(new Func<TableState, Task<TableData<RequestDto>>>(LoadPage))">
+			  ServerData="@(new Func<TableState, Task<TableData<GoodsDto>>>(LoadPage))">
    		<ToolBarContent>
 			<MudText Typo="Typo.h6">Request</MudText>
 			<MudSpacer />
@@ -27,37 +26,37 @@ else
 		</ToolBarContent>
 
 		<HeaderContent>
-			<MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<RequestDto, object>(x=>x.Id)">Id</MudTableSortLabel></MudTh>
-			<MudTh><MudTableSortLabel SortBy="new Func<RequestDto, object>(x=>x.CargoDescription)">Cargo description </MudTableSortLabel></MudTh>
-			<MudTh><MudTableSortLabel SortBy="new Func<RequestDto, object>(x=>x.DeliveryDate)">Delivery date</MudTableSortLabel></MudTh>
-			<MudTh><MudTableSortLabel SortBy="new Func<RequestDto, object>(x=>x.DeliveryTime)">Dispatch date</MudTableSortLabel></MudTh>
-			<MudTh><MudTableSortLabel SortBy="new Func<RequestDto, object>(x=>x.Status)">Status</MudTableSortLabel></MudTh>
-			<MudTh><MudTableSortLabel SortBy="new Func<RequestDto, object>(x=>x.DeliveryAddress)">Delivery address </MudTableSortLabel></MudTh>
-			<MudTh><MudTableSortLabel SortBy="new Func<RequestDto, object>(x=>x.DispatchAddress)">Dispatch address</MudTableSortLabel></MudTh>
-			<MudTh><MudTableSortLabel SortBy="new Func<RequestDto, object>(x=>x.TelNumber)">Recipient's number </MudTableSortLabel></MudTh>
-			<MudTh><MudTableSortLabel SortBy="new Func<RequestDto, object>(x=>x.RecipientFIO)">Recipient FIO </MudTableSortLabel></MudTh>
-			<MudTh><MudTableSortLabel SortBy="new Func<RequestDto, object>(x=>x.Deliver.Name)">Deliver</MudTableSortLabel></MudTh>
+		@* 	<MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<GoodsDto, object>(x=>x.Id)">Id</MudTableSortLabel></MudTh> *@
+			<MudTh><MudTableSortLabel SortBy="new Func<GoodsDto, object>(x=>x.Surname)">Name </MudTableSortLabel></MudTh>
+@* 			<MudTh><MudTableSortLabel SortBy="new Func<GoodsDto, object>(x=>x.DeliveryDate)">Delivery date</MudTableSortLabel></MudTh>
+			<MudTh><MudTableSortLabel SortBy="new Func<GoodsDto, object>(x=>x.DeliveryTime)">Dispatch date</MudTableSortLabel></MudTh>
+			<MudTh><MudTableSortLabel SortBy="new Func<GoodsDto, object>(x=>x.Status)">Status</MudTableSortLabel></MudTh>
+			<MudTh><MudTableSortLabel SortBy="new Func<GoodsDto, object>(x=>x.DeliveryAddress)">Delivery address </MudTableSortLabel></MudTh>
+			<MudTh><MudTableSortLabel SortBy="new Func<GoodsDto, object>(x=>x.DispatchAddress)">Dispatch address</MudTableSortLabel></MudTh>
+			<MudTh><MudTableSortLabel SortBy="new Func<GoodsDto, object>(x=>x.TelNumber)">Recipient's number </MudTableSortLabel></MudTh>
+			<MudTh><MudTableSortLabel SortBy="new Func<GoodsDto, object>(x=>x.RecipientFIO)">Recipient FIO </MudTableSortLabel></MudTh>
+			<MudTh><MudTableSortLabel SortBy="new Func<GoodsDto, object>(x=>x.Deliver.Name)">Deliver</MudTableSortLabel></MudTh> *@
 		</HeaderContent>
 		<RowTemplate>
-			<MudTd DataLabel="Id"> @context.Id</MudTd>
-			<MudTd DataLabel="Cargo description"> @context.CargoDescription</MudTd>
-			<MudTd DataLabel="Delivery date">@context.DeliveryDate</MudTd>
+		@* 	<MudTd DataLabel="Id"> @context.Id</MudTd> *@
+			<MudTd DataLabel="Name"> @context.Surname</MudTd>
+@* 			<MudTd DataLabel="Delivery date">@context.DeliveryDate</MudTd>
 			<MudTd DataLabel="Dispatch date">@context.DeliveryTime</MudTd>
 			<MudTd DataLabel="Status">@context.Status</MudTd>
 			<MudTd DataLabel="Delivery address">@context.DeliveryAddress</MudTd>
 			<MudTd DataLabel="Dispatch address">@context.DispatchAddress</MudTd>
 			<MudTd DataLabel="Recipient's number">@context.TelNumber</MudTd>
 			<MudTd DataLabel="Recipient FIO">@context.RecipientFIO</MudTd>
-			<MudTd DataLabel="Deliver">@context.Deliver?.Name</MudTd>
+			<MudTd DataLabel="Deliver">@context.Deliver?.Name</MudTd> *@
 		</RowTemplate>
 		<RowEditingTemplate>
-			<MudTd DataLabel="Id">@context.Id</MudTd>
-			@if (context.Status == RequestStatus.New)
-			{
-				<MudTd DataLabel="Cargo description">
-					<MudTextField @bind-Value="@context.CargoDescription" />
+			@*<MudTd DataLabel="Id">@context.Id</MudTd>
+		 	@if (context.Status == RequestStatus.New)
+			{ *@
+				<MudTd DataLabel="Name">
+					<MudTextField @bind-Value="@context.Surname" />
 				</MudTd>
-				<MudTd DataLabel="Delivery date">
+				@* <MudTd DataLabel="Delivery date">
 					<MudDatePicker @bind-Value="@context.DeliveryDate" />
 				</MudTd>
 				<MudTd DataLabel="Dispatch date">
@@ -78,7 +77,7 @@ else
 				</MudTd>
 				<MudTd DataLabel="Deliver">
 					<MudSelect @bind-Value="@context.Deliver" T="DeliverDto">
-						@foreach (var deliver in Delivers)
+						@foreach (var deliver in Delivs)
 						{
 							<MudSelectItem Value="@deliver">@deliver.Name</MudSelectItem>
 						}
@@ -111,7 +110,7 @@ else
 				<MudTd DataLabel="Dispatch address">@context.DispatchAddress</MudTd>
 				<MudTd DataLabel="Recipient's number">@context.TelNumber</MudTd>
 				<MudTd DataLabel="Recipient FIO">@context.RecipientFIO</MudTd>
-			}
+			} *@
 		</RowEditingTemplate>
 		<PagerContent >
 			<MudTablePager  />
@@ -122,5 +121,5 @@ else
 	</MudTable>
 	<MudIconButton Size="@MudBlazor.Size.Large" Icon="@Icons.Material.Filled.Delete" OnClick="Drop">Delete</MudIconButton>
 	<ReasonDialog ></ReasonDialog>
-
+	<MudIconButton Icon="@Icons.Material.Filled.ArrowForward" OnClick="OpenMap"></MudIconButton>
 }

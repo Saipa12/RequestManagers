@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using RequestManager.API.Dto;
 using RequestManager.API.Repositories;
 using RequestManager.Core.Handlers;
 
-namespace RequestManager.API.Handlers.RequestHandler;
+namespace RequestManager.API.Handlers.GoodsHandler;
 
 public record GetRequestsGoods(int PageNumber = 1, int PageSize = 10);
 
@@ -26,7 +27,7 @@ public class GetRequestsGoodsHandler : IAsyncHandler<GetRequestsGoods, GetRespon
         var count = await _goodsRepository.GetCount();
         var query = await _goodsRepository.GetAsync(x =>
         {
-            x = x.Skip(skip).Take(request.PageSize);
+            x = x.Skip(skip).Take(request.PageSize).Include(x => x.SendGoods).Include(x => x.DeliverGoods);
             return x;
         });
 

@@ -5,7 +5,7 @@ using RequestManager.Core.Handlers;
 
 using RequestManager.Database.Models;
 
-namespace RequestManager.API.Handlers.RequestHandler;
+namespace RequestManager.API.Handlers.DeliverHandler;
 
 public record GetRequestDeliverGoods(int Id);
 

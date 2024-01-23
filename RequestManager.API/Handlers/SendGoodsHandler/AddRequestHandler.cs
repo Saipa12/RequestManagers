@@ -2,8 +2,9 @@
 using RequestManager.API.Dto;
 using RequestManager.API.Repositories;
 using RequestManager.Core.Handlers;
+using RequestManager.Database.Models;
 
-namespace RequestManager.API.Handlers.RequestHandler;
+namespace RequestManager.API.SendHandler;
 
 public record AddRequestSendGoods(SendGoodsDto SendGoodsDto);
 
