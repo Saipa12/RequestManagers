@@ -30,7 +30,7 @@ public class GetRequestsSendGoodsHandler : IAsyncHandler<GetRequestsSendGoods, G
             return x.Skip(skip)
                     .Take(request.PageSize)
                     .Include(s => s.Requests)
-                    .Where(s => s.SendDate > request.DateFrom && s.SendDate < request.DateBefore);
+                    .Where(s => s.SendDate > request.DateFrom && s.SendDate < request.DateBefore).AsNoTracking();
         });
         var count = query.Count();
         var requests = query.ToList();

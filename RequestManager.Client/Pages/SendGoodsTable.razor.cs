@@ -47,7 +47,7 @@ public partial class SendGoodsTable
         {
             Send = (await GetRequestsHandler.Handle(new GetRequestsSendGoods(_dateFrom, _datebefore))).RequestDto.ToList();
             _selectedItems = new();
-            Goods = (await GetGoodsHandler.Handle(new GetRequestsGoods())).RequestDto;
+            Goods = (await GetGoodsHandler.Handle(new GetRequestsGoods(0))).RequestDto.ToList();
 
             await InvokeAsync(StateHasChanged);
         }
@@ -56,7 +56,7 @@ public partial class SendGoodsTable
 
     private async Task<TableData<SendGoodsDto>> LoadPage(TableState state)
     {
-        _isFirst = false;
+        _isFirst = true;
         _page = state.Page;
         _pageSize = state.PageSize;
 
@@ -71,7 +71,7 @@ public partial class SendGoodsTable
 
     private void BackupItem(SendGoodsDto element)
     {
-        _selectedItem = _elementBeforeEdit; /*= Maper.Map<SendGoodsDto>(element);*/
+        _selectedItem = _elementBeforeEdit;
     }
 
     public async void Drop()
@@ -86,18 +86,24 @@ public partial class SendGoodsTable
 
     private async void ItemHasBeenCommitted(SendGoodsDto element)
     {
-        if (element.Id == 0)
+        try
         {
-            element.Id = (await GetRequestsHandler.Handle(new GetRequestsSendGoods(_dateFrom, _datebefore, 0))).RequestDto.Last().Id;
-            await EditRequestHandler.Handle(new EditRequestSendGoods(element));
-            Send = (await GetRequestsHandler.Handle(new GetRequestsSendGoods(_dateFrom, _datebefore))).RequestDto.ToList();
-        }
-        else
-        {
-            await EditRequestHandler.Handle(new EditRequestSendGoods(element));
-        }
+            if (element.Id == 0)
+            {
+                element.Id = (await GetRequestsHandler.Handle(new GetRequestsSendGoods(_dateFrom, _datebefore, 0))).RequestDto.Last().Id;
+                await EditRequestHandler.Handle(new EditRequestSendGoods(element));
+                Send = (await GetRequestsHandler.Handle(new GetRequestsSendGoods(_dateFrom, _datebefore))).RequestDto.ToList();
+            }
+            else
+            {
+                await EditRequestHandler.Handle(new EditRequestSendGoods(element));
+            }
 
-        await InvokeAsync(StateHasChanged);
+            await InvokeAsync(StateHasChanged);
+        }
+        catch
+        {
+        }
     }
 
     private async void ResetItemToOriginalValues(SendGoodsDto element)
@@ -121,7 +127,7 @@ public partial class SendGoodsTable
         }
         else
         {
-            _isFirst = true;
+            _isFirst = false;
         }
     }
 
@@ -130,9 +136,9 @@ public partial class SendGoodsTable
         _mudTable.SetEditingItem(null);
         var newRecord = new SendGoodsDto
         {
+            Id = 0,
             SendDate = DateTime.UtcNow,
-            Count = 0,
-            Requests = (await GetGoodsHandler.Handle(new GetRequestsGoods())).RequestDto.First()
+            Count = 0
         };
 
         Send.Insert(0, newRecord);

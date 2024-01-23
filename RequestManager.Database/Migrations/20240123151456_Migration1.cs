@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace RequestManager.Database.Migrations
 {
     /// <inheritdoc />
-    public partial class migration1 : Migration
+    public partial class Migration1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -240,7 +240,7 @@ namespace RequestManager.Database.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Surname = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Surname = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
@@ -276,7 +276,7 @@ namespace RequestManager.Database.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     DeliverDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Count = table.Column<int>(type: "int", nullable: false),
-                    GoodsId = table.Column<long>(type: "bigint", nullable: false),
+                    GoodsId = table.Column<long>(type: "bigint", nullable: true),
                     CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
@@ -306,8 +306,7 @@ namespace RequestManager.Database.Migrations
                         name: "FK_DeliversGoods_Goods_GoodsId",
                         column: x => x.GoodsId,
                         principalTable: "Goods",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -318,7 +317,7 @@ namespace RequestManager.Database.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SendDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Count = table.Column<int>(type: "int", nullable: false),
-                    RequestsId = table.Column<long>(type: "bigint", nullable: false),
+                    RequestsId = table.Column<long>(type: "bigint", nullable: true),
                     CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
@@ -348,8 +347,7 @@ namespace RequestManager.Database.Migrations
                         name: "FK_SendsGoods_Goods_RequestsId",
                         column: x => x.RequestsId,
                         principalTable: "Goods",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -452,6 +450,12 @@ namespace RequestManager.Database.Migrations
                 name: "IX_Goods_DeletedById",
                 table: "Goods",
                 column: "DeletedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Goods_Surname",
+                table: "Goods",
+                column: "Surname",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Goods_UpdatedById",

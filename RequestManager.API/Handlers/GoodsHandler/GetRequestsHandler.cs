@@ -27,7 +27,7 @@ public class GetRequestsGoodsHandler : IAsyncHandler<GetRequestsGoods, GetRespon
         var count = await _goodsRepository.GetCount();
         var query = await _goodsRepository.GetAsync(x =>
         {
-            x = x.Skip(skip).Take(request.PageSize).Include(x => x.SendGoods).Include(x => x.DeliverGoods);
+            x = x.Skip(skip).Take(request.PageSize).Include(x => x.SendGoods).Include(x => x.DeliverGoods).AsNoTracking();
             return x;
         });
 

@@ -322,7 +322,7 @@ namespace RequestManager.Database.Migrations
                     b.Property<DateTime>("DeliverDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<long>("GoodsId")
+                    b.Property<long?>("GoodsId")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -366,7 +366,7 @@ namespace RequestManager.Database.Migrations
 
                     b.Property<string>("Surname")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -379,6 +379,9 @@ namespace RequestManager.Database.Migrations
                     b.HasIndex("CreatedById");
 
                     b.HasIndex("DeletedById");
+
+                    b.HasIndex("Surname")
+                        .IsUnique();
 
                     b.HasIndex("UpdatedById");
 
@@ -408,7 +411,7 @@ namespace RequestManager.Database.Migrations
                     b.Property<string>("DeletedById")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<long>("RequestsId")
+                    b.Property<long?>("RequestsId")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime>("SendDate")
@@ -591,9 +594,7 @@ namespace RequestManager.Database.Migrations
 
                     b.HasOne("RequestManager.Database.Models.Goods", "Goods")
                         .WithMany("DeliverGoods")
-                        .HasForeignKey("GoodsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("GoodsId");
 
                     b.HasOne("RequestManager.Database.Models.User", "UpdatedBy")
                         .WithMany()
@@ -641,9 +642,7 @@ namespace RequestManager.Database.Migrations
 
                     b.HasOne("RequestManager.Database.Models.Goods", "Requests")
                         .WithMany("SendGoods")
-                        .HasForeignKey("RequestsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RequestsId");
 
                     b.HasOne("RequestManager.Database.Models.User", "UpdatedBy")
                         .WithMany()

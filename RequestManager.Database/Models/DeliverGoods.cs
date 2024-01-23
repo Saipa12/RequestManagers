@@ -11,6 +11,5 @@ public class DeliverGoods : AuditableDatabaseEntity
     [Required]
     public int Count { get; set; }
 
-    [Required]
     public Goods Goods { get; set; }
 }

@@ -75,18 +75,6 @@ public partial class RequestTable
         _elementBeforeEdit = Maper.Map<GoodsDto>(element);
     }
 
-    //public async void RejectRequest(GoodsDto request)
-    //{
-    //    //var parameters = new DialogParameters<ReasonDialog> { };
-
-    //    var dialog = await DialogService.ShowAsync<ReasonDialog>($"{request.Id} From {request.DispatchAddress} To {request.DeliveryAddress} "/*, parameters*/);
-    //    var result = await dialog.Result;
-
-    //    if (!result.Canceled)
-    //    {
-    //        await RejectedRequestHandler.Handle(new RejectedRequest(request, result.Data.ToString()));
-    //    }
-    //}
     public void OpenMap()
     {
         Navigation.NavigateTo("send");
@@ -112,18 +100,24 @@ public partial class RequestTable
 
     private async void ItemHasBeenCommitted(GoodsDto element)
     {
-        if (element.Id == 0)
+        try
         {
-            element.Id = (await GetRequestsHandler.Handle(new GetRequestsGoods(0))).RequestDto.Last().Id;
-            await EditRequestHandler.Handle(new EditRequestGoods(element));
-            Goods = (await GetRequestsHandler.Handle(new GetRequestsGoods())).RequestDto.ToList();
-        }
-        else
-        {
-            await EditRequestHandler.Handle(new EditRequestGoods(element));
-        }
+            if (element.Id == 0)
+            {
+                element.Id = (await GetRequestsHandler.Handle(new GetRequestsGoods(0))).RequestDto.Last().Id;
+                await EditRequestHandler.Handle(new EditRequestGoods(element));
+                Goods = (await GetRequestsHandler.Handle(new GetRequestsGoods())).RequestDto.ToList();
+            }
+            else
+            {
+                await EditRequestHandler.Handle(new EditRequestGoods(element));
+            }
 
-        await InvokeAsync(StateHasChanged);
+            await InvokeAsync(StateHasChanged);
+        }
+        catch
+        {
+        }
     }
 
     private async void ResetItemToOriginalValues(GoodsDto element)
@@ -174,10 +168,6 @@ public partial class RequestTable
         var newRecord = new GoodsDto
         {
             Surname = ""
-            //DeliveryAddress = "",
-            //DispatchAddress = "",
-            //DeliveryDate = DateTime.UtcNow,
-            //DeliveryTime = DateTime.UtcNow.AddDays(3)
         };
 
         Goods.Insert(0, newRecord);
